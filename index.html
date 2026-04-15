@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gabriel Marchante — Developer Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #070b12;
+      --bg2: #0d1421;
+      --bg3: #111c2e;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --accent3: #00ffaa;
+      --text: #e2e8f0;
+      --text-dim: #64748b;
+      --border: rgba(0, 212, 255, 0.15);
+      --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-main: 'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s ease;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,212,255,0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.15s ease;
+    }
+
+    /* GRID BG */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(7, 11, 18, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      font-family: var(--font-mono);
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* SECTIONS */
+    section { position: relative; z-index: 1; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero-content { max-width: 800px; }
+    .hero-tag {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-name {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-name span { color: var(--accent); }
+    .hero-role {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-desc {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 560px;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+    .btn-primary {
+      padding: 0.9rem 2rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-primary:hover {
+      background: white;
+      box-shadow: var(--glow);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      padding: 0.9rem 2rem;
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      transform: translateY(-2px);
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 3rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      animation: bounce 2s infinite;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    /* ABOUT */
+    #about {
+      padding: 8rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    .about-text {
+      color: var(--text-dim);
+      line-height: 1.9;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+    .stat-label {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      margin-top: 0.3rem;
+    }
+
+    /* TIMELINE */
+    #timeline {
+      padding: 8rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .timeline-header { text-align: center; margin-bottom: 5rem; }
+    .timeline-list { position: relative; }
+    .timeline-list::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+    }
+    .timeline-item {
+      padding-left: 3rem;
+      padding-bottom: 3.5rem;
+      position: relative;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 0.6s ease;
+    }
+    .timeline-item.visible { opacity: 1; transform: translateX(0); }
+    .timeline-dot {
+      position: absolute;
+      left: -6px; top: 4px;
+      width: 13px; height: 13px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent);
+    }
+    .timeline-date {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+    .timeline-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .timeline-sub {
+      color: var(--accent2);
+      font-size: 0.9rem;
+      margin-bottom: 0.6rem;
+      font-family: var(--font-mono);
+    }
+    .timeline-desc { color: var(--text-dim); line-height: 1.7; font-size: 0.95rem; }
+
+    /* SKILLS */
+    #skills {
+      padding: 8rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .skills-header { text-align: center; margin-bottom: 4rem; }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .skill-group:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: var(--glow);
+    }
+    .skill-group::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.03), transparent);
+      pointer-events: none;
+    }
+    .skill-group-title {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .skill-group-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .skill-tag {
+      padding: 0.35rem 0.9rem;
+      background: rgba(0,212,255,0.06);
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      background: rgba(0,212,255,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* PROJECTS */
+    #projects {
+      padding: 8rem 4rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .projects-header { text-align: center; margin-bottom: 4rem; }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transition: transform 0.3s;
+      transform-origin: left;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .project-number {
+      font-family: var(--font-mono);
+      color: rgba(0,212,255,0.2);
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      position: absolute;
+      top: 1rem; right: 1.5rem;
+    }
+    .project-icon { font-size: 2rem; }
+    .project-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .project-desc {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      flex: 1;
+    }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .project-tag {
+      padding: 0.25rem 0.7rem;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: #a78bfa;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      transition: gap 0.2s;
+      margin-top: auto;
+    }
+    .project-link:hover { gap: 0.8rem; }
+
+    /* CONTACT */
+    #contact {
+      padding: 8rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .contact-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+    .contact-title { font-size: 3rem; font-weight: 800; margin-bottom: 1rem; }
+    .contact-desc { color: var(--text-dim); line-height: 1.8; margin-bottom: 3rem; }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 1.8rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: var(--glow);
+      transform: translateY(-3px);
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero, #about, #timeline, #skills, #projects, #contact { padding: 5rem 1.5rem; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-name { font-size: 3rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">GM.DEV</div>
+    <ul class="nav-links">
+      <li><a href="#about">Sobre mí</a></li>
+      <li><a href="#timeline">Formación</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Proyectos</a></li>
+      <li><a href="#contact">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+      <div class="hero-tag">// desarrollador de software</div>
+      <h1 class="hero-name">Gabriel<br><span>Marchante</span></h1>
+      <p class="hero-role">DAM Superior · SMX · Valencia, España</p>
+      <p class="hero-desc">
+        Desarrollador apasionado por construir plataformas reales con arquitecturas modernas.
+        Especializado en backend con Java y Quarkus, apps móviles con Flutter y proyectos de IA con MCP.
+      </p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">Ver proyectos</a>
+        <a href="#contact" class="btn-outline">Contactar</a>
+      </div>
+    </div>
+    <div class="hero-scroll">SCROLL</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="reveal">
+      <div class="section-label">// 01. sobre mí</div>
+      <h2 class="section-title">Código con<br><span style="color:var(--accent)">propósito</span></h2>
+      <p class="about-text">
+        Soy Gabriel, desarrollador de software con formación en DAM Superior y SMX Medio.
+        Me apasiona construir proyectos completos, desde la arquitectura de microservicios hasta
+        la interfaz de usuario, pasando por integraciones de IA y protocolos modernos como MCP.
+      </p>
+      <p class="about-text">
+        Me atrae especialmente el ecosistema Java con Quarkus, el desarrollo móvil con Flutter
+        y la intersección entre la inteligencia artificial y el mundo real.
+      </p>
+    </div>
+    <div class="reveal">
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">5+</div>
+          <div class="stat-label">Proyectos completos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Proyectos con IA / MCP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">DAM</div>
+          <div class="stat-label">Técnico Superior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">SMX</div>
+          <div class="stat-label">Técnico Medio</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline">
+    <div class="timeline-header reveal">
+      <div class="section-label" style="justify-content:center;display:flex">// 02. formación</div>
+      <h2 class="section-title">Mi camino</h2>
+    </div>
+    <div class="timeline-list">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">2023 — 2025</div>
+        <div class="timeline-title">Técnico Superior en DAM</div>
+        <div class="timeline-sub">Desarrollo de Aplicaciones Multiplataforma</div>
+        <div class="timeline-desc">Desarrollo de aplicaciones de escritorio, web y móvil. Bases de datos, arquitectura de software, APIs REST, microservicios y despliegue con Docker.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent2);box-shadow:0 0 12px var(--accent2)"></div>
+        <div class="timeline-date">2021 — 2023</div>
+        <div class="timeline-title">Técnico en SMX</div>
+        <div class="timeline-sub">Sistemas Microinformáticos y Redes</div>
+        <div class="timeline-desc">Administración de sistemas, redes, Linux, virtualización y soporte técnico. Base sólida en infraestructura que complementa el perfil de desarrollo.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:var(--accent3);box-shadow:0 0 12px var(--accent3)"></div>
+        <div class="timeline-date">2024 — Presente</div>
+        <div class="timeline-title">Proyectos personales de IA</div>
+        <div class="timeline-sub">Model Context Protocol · LangChain4j · Quarkus</div>
+        <div class="timeline-desc">Exploración del ecosistema MCP de Anthropic, desarrollo de agentes autónomos con patrones ReAct, integración con Gemini, ChatGPT y Claude.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="skills-header reveal">
+      <div class="section-label" style="justify-content:center;display:flex">// 03. tecnologías</div>
+      <h2 class="section-title">Stack técnico</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Frontend</div>
+        <div class="skill-tags">
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">Vue.js</span>
+          <span class="skill-tag">Flutter</span>
+          <span class="skill-tag">Dart</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Backend</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Java 17+</span>
+          <span class="skill-tag">Quarkus</span>
+          <span class="skill-tag">Spring Boot</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Express</span>
+          <span class="skill-tag">Hibernate</span>
+          <span class="skill-tag">REST API</span>
+          <span class="skill-tag">JWT</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Bases de datos</div>
+        <div class="skill-tags">
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">MySQL</span>
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">Flyway</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">IA & MCP</div>
+        <div class="skill-tags">
+          <span class="skill-tag">MCP Protocol</span>
+          <span class="skill-tag">LangChain4j</span>
+          <span class="skill-tag">Gemini</span>
+          <span class="skill-tag">Claude</span>
+          <span class="skill-tag">ChatGPT</span>
+          <span class="skill-tag">RAG</span>
+          <span class="skill-tag">Agentes ReAct</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">DevOps & Herramientas</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">GitHub Actions</span>
+          <span class="skill-tag">Linux</span>
+          <span class="skill-tag">Maven</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="projects-header reveal">
+      <div class="section-label" style="justify-content:center;display:flex">// 04. proyectos</div>
+      <h2 class="section-title">Lo que he construido</h2>
+    </div>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <div class="project-number">01</div>
+        <div class="project-icon">🎬</div>
+        <div class="project-name">Prisma</div>
+        <div class="project-desc">Plataforma de streaming tipo Netflix con arquitectura de microservicios. SpringBoot, Node.js, Flutter, Vue.js, Odoo, MongoDB y streaming HLS adaptativo.</div>
+        <div class="project-tags">
+          <span class="project-tag">Java</span>
+          <span class="project-tag">SpringBoot</span>
+          <span class="project-tag">Flutter</span>
+          <span class="project-tag">Vue.js</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">MongoDB</span>
+        </div>
+        <a href="https://github.com/Gabriel-marchante/Prisma" target="_blank" class="project-link">Ver repositorio →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-number">02</div>
+        <div class="project-icon">✨</div>
+        <div class="project-name">Nova</div>
+        <div class="project-desc">Plataforma IA multi-tenant con Quarkus. Soporta Gemini, ChatGPT y Claude. Historial persistido en PostgreSQL, cifrado AES/GCM de API Keys y orquestador MCP dinámico.</div>
+        <div class="project-tags">
+          <span class="project-tag">Quarkus</span>
+          <span class="project-tag">LangChain4j</span>
+          <span class="project-tag">MCP</span>
+          <span class="project-tag">JWT</span>
+          <span class="project-tag">PostgreSQL</span>
+        </div>
+        <a href="https://github.com/Gabriel-marchante/Nova-AI_Platform" target="_blank" class="project-link">Ver repositorio →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-number">03</div>
+        <div class="project-icon">🤖</div>
+        <div class="project-name">Claudio</div>
+        <div class="project-desc">Orquestador IA autónomo con patrón ReAct. Se conecta dinámicamente a servidores MCP vía SSE, descubre herramientas en tiempo real y las encadena en hasta 5 iteraciones.</div>
+        <div class="project-tags">
+          <span class="project-tag">Quarkus</span>
+          <span class="project-tag">Gemini 2.5</span>
+          <span class="project-tag">MCP</span>
+          <span class="project-tag">ReAct</span>
+          <span class="project-tag">SSE</span>
+        </div>
+        <a href="https://github.com/Gabriel-marchante/Model-Context-Protocol" target="_blank" class="project-link">Ver repositorio →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-number">04</div>
+        <div class="project-icon">🕐</div>
+        <div class="project-name">Presantis</div>
+        <div class="project-desc">Plataforma de control horario adaptada al Real Decreto-ley 8/2019. Fichaje móvil, gestión de vacaciones, trazabilidad de cambios y panel de administración completo.</div>
+        <div class="project-tags">
+          <span class="project-tag">Quarkus</span>
+          <span class="project-tag">Flutter</span>
+          <span class="project-tag">Vue.js</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">Docker</span>
+        </div>
+        <a href="https://github.com/Gabriel-marchante/Presantis" target="_blank" class="project-link">Ver repositorio →</a>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-number">05</div>
+        <div class="project-icon">🎮</div>
+        <div class="project-name">Retro Games Portal</div>
+        <div class="project-desc">Portal web de juegos retro clásicos con rankings mundiales y estadísticas personales. Pac-Man, Snake, Bomberman y más, con backend Node.js y base de datos MySQL.</div>
+        <div class="project-tags">
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">Express</span>
+          <span class="project-tag">MySQL</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">JavaScript</span>
+        </div>
+        <a href="https://github.com/Gabriel-marchante/Retro-Games-Portal" target="_blank" class="project-link">Ver repositorio →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner reveal">
+      <div class="section-label" style="justify-content:center;display:flex;margin-bottom:1rem">// 05. contacto</div>
+      <h2 class="contact-title">Hablemos</h2>
+      <p class="contact-desc">¿Tienes un proyecto en mente o quieres colaborar? Estoy disponible para nuevas oportunidades.</p>
+      <div class="contact-links">
+        <a href="mailto:gabrielmarchantebanuls1975@gmail.com" class="contact-link">
+          <span>📧</span> Email
+        </a>
+        <a href="https://www.linkedin.com/in/gabriel-m-833856242/" target="_blank" class="contact-link">
+          <span>💼</span> LinkedIn
+        </a>
+        <a href="https://github.com/Gabriel-marchante" target="_blank" class="contact-link">
+          <span>🐙</span> GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Gabriel Marchante Bañuls</span>
+    <span style="color:var(--accent)">Diseñado y desarrollado desde Valencia 🧡</span>
+  </footer>
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx - 6 + 'px'; cursor.style.top = my - 6 + 'px'; });
+    function animateRing() {
+      rx += (mx - rx - 18) * 0.12;
+      ry += (my - ry - 18) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // SCROLL REVEAL
+    const reveals = document.querySelectorAll('.reveal, .timeline-item');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
